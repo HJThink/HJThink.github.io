@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ios on 锐意翱翔</title>
+    <link>https://think.cc/tags/ios.html</link>
+    <description>Recent content in Ios on 锐意翱翔</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 03 May 2018 14:50:02 +0800</lastBuildDate>
+    
+	<atom:link href="https://think.cc/tags/ios/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>iOS 数据精度及大数的处理</title>
+      <link>https://think.cc/ios-shu-ju-jing-du-ji-da-shu-de-chu-li.html</link>
+      <pubDate>Thu, 03 May 2018 14:50:02 +0800</pubDate>
+      
+      <guid>https://think.cc/ios-shu-ju-jing-du-ji-da-shu-de-chu-li.html</guid>
+      <description>在 iOS 开发中，我们很容易遇到使用 CGFloat 来标示浮点数，但这样的表示会造成精度失真。这时我们可以使用NSDecimalNumber来处理这个问题。
+NSDecimalNumber是NSNumber的子类，可以处理大数运算及数据的精度问题。
+大数相乘可能导致的问题 我们先上一段代码：
+NSString *priceStr = @&amp;quot;&amp;quot;; NSDecimalNumber *number = [NSDecimalNumber decimalNumberWithString:priceStr]; NSDecimalNumber *countNum = [NSDecimalNumber decimalNumberWithString:stringWithNSInteger(NSIntegerMax)]; number = [number decimalNumberByMultiplyingBy:countNum];  在这段代码中，number的值为：NaN，即：not a number ，非数值； 而countNum 是一个最大的整数， 最后，将NaN和最大的整数相乘，导致了overflow的crash。
+解决方案：
+//定义数值处理的行为 NSDecimalNumberHandler *roundUp = [NSDecimalNumberHandler decimalNumberHandlerWithRoundingMode:NSRoundBankers scale:2 raiseOnExactness:NO raiseOnOverflow:NO raiseOnUnderflow:NO raiseOnDivideByZero:NO]; NSString *priceStr = @&amp;quot;&amp;quot;; NSDecimalNumber *number = [NSDecimalNumber decimalNumberWithString:priceStr]; NSDecimalNumber *countNum = [NSDecimalNumber decimalNumberWithString:stringWithNSInteger(NSIntegerMax)]; //使用数据处理行为的约定来进行运算，防止crash number = [number decimalNumberByMultiplyingBy:countNum withBehavior:roundUp];  上面这个例子不会crash了，但是最终number的值为NaN，需要后续的业务逻辑进行判断处理；
+NSDecimalNumberHandler 用到的参数，其中：</description>
+    </item>
+    
+    <item>
+      <title>iOS 获取图片的原始格式</title>
+      <link>https://think.cc/ios-huo-qu-tu-pian-de-yuan-shi-ge-shi.html</link>
+      <pubDate>Thu, 28 Sep 2017 17:16:29 +0800</pubDate>
+      
+      <guid>https://think.cc/ios-huo-qu-tu-pian-de-yuan-shi-ge-shi.html</guid>
+      <description>&lt;ul class=&#34;task-list&#34;&gt;
+&lt;li&gt;&lt;label&gt;&lt;input type=&#34;checkbox&#34; disabled class=&#34;task-list-item&#34;&gt; show list&lt;/label&gt;&lt;/li&gt;
+&lt;li&gt;&lt;label&gt;&lt;input type=&#34;checkbox&#34; checked disabled class=&#34;task-list-item&#34;&gt; next list&lt;/label&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;今天测试给过来一张图片(后缀是.png)说无法在 APP 的 WebView 里面无法显示，而且在 Safari 里也是无法打开的，但在谷歌浏览器上是可以正常显示。起初是知道 &lt;a href=&#34;https://zh.wikipedia.org/wiki/WebP&#34;&gt;WebP&lt;/a&gt; 格式的图片苹果是不支持显示的，但这个图片的后缀是.png 的，难道还有 png 的图片是苹果不支持的么？&lt;/p&gt;
+
+&lt;p&gt;根据个人经验，是没有听说苹果不支持 png 格式的图片的，这时想到以前自己更改 JPG 图片后缀的事情，是不是这张图片也是经过别人手动改后缀的呢，带着这个疑问，我决定手动判断这张图片的原始格式。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

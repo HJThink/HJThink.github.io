@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on 锐意翱翔</title>
+    <link>https://think.cc/tags.html</link>
+    <description>Recent content in Tags on 锐意翱翔</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 03 Jan 2018 10:31:51 +0800</lastBuildDate>
+    
+	<atom:link href="https://think.cc/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Git</title>
+      <link>https://think.cc/tags/git.html</link>
+      <pubDate>Wed, 03 Jan 2018 10:31:51 +0800</pubDate>
+      
+      <guid>https://think.cc/tags/git.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Html</title>
+      <link>https://think.cc/tags/html.html</link>
+      <pubDate>Wed, 03 Jan 2018 11:10:49 +0800</pubDate>
+      
+      <guid>https://think.cc/tags/html.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ios</title>
+      <link>https://think.cc/tags/ios.html</link>
+      <pubDate>Thu, 03 May 2018 14:50:02 +0800</pubDate>
+      
+      <guid>https://think.cc/tags/ios.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

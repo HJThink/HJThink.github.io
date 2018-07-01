@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS 数据精度及大数的处理 | 锐意翱翔</title>
+<link rel="stylesheet" href="https://think.cc/css/style.css">
+<link rel="stylesheet" href="https://think.cc/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/github.min.css">
+
+
+<section class="section">
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-left">
+        <a class="nav-item" href="https://think.cc/"><h1 class="title is-4">锐意翱翔</h1></a>
+      </div>
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          
+          <a class="level-item" href="https://github.com/HJDev">
+            <span class="icon">
+              <i class="fa fa-github"></i>
+            </span>
+          </a>
+          
+          <a class="level-item" href="https://weibo.com/DevThink">
+            <span class="icon">
+              <i class="fa fa-weibo"></i>
+            </span>
+          </a>
+          
+          <a class="level-item" href="https://think.cc/index.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+          </a>
+          
+        </nav>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="subtitle is-6">May 3, 2018</h2>
+    <h1 class="title">iOS 数据精度及大数的处理</h1>
+    <div class="content">
+      
+
+<p>在 iOS 开发中，我们很容易遇到使用 CGFloat 来标示浮点数，但这样的表示会造成精度失真。这时我们可以使用<code>NSDecimalNumber</code>来处理这个问题。</p>
+
+<p><code>NSDecimalNumber</code>是<code>NSNumber</code>的子类，可以处理大数运算及数据的精度问题。</p>
+
+<h3 id="大数相乘可能导致的问题">大数相乘可能导致的问题</h3>
+
+<p>我们先上一段代码：</p>
+
+<pre><code>NSString *priceStr = @&quot;&quot;;
+NSDecimalNumber *number = [NSDecimalNumber decimalNumberWithString:priceStr];
+NSDecimalNumber *countNum = [NSDecimalNumber decimalNumberWithString:stringWithNSInteger(NSIntegerMax)];
+number = [number decimalNumberByMultiplyingBy:countNum];
+</code></pre>
+
+<p>在这段代码中，number的值为：NaN，即：not a number ，非数值；
+而countNum 是一个最大的整数，
+最后，将NaN和最大的整数相乘，导致了overflow的crash。</p>
+
+<p>解决方案：</p>
+
+<pre><code>//定义数值处理的行为
+NSDecimalNumberHandler *roundUp = [NSDecimalNumberHandler
+                                      decimalNumberHandlerWithRoundingMode:NSRoundBankers
+                                      scale:2
+                                      raiseOnExactness:NO
+                                      raiseOnOverflow:NO
+                                      raiseOnUnderflow:NO
+                                      raiseOnDivideByZero:NO];
+    
+NSString *priceStr = @&quot;&quot;;
+NSDecimalNumber *number = [NSDecimalNumber decimalNumberWithString:priceStr];
+NSDecimalNumber *countNum = [NSDecimalNumber decimalNumberWithString:stringWithNSInteger(NSIntegerMax)];
+
+//使用数据处理行为的约定来进行运算，防止crash
+number = [number decimalNumberByMultiplyingBy:countNum withBehavior:roundUp];
+
+</code></pre>
+
+<p>上面这个例子不会crash了，但是最终number的值为NaN，需要后续的业务逻辑进行判断处理；</p>
+
+<p>NSDecimalNumberHandler 用到的参数，其中：</p>
+
+<h4 id="nsroundbankers">NSRoundBankers</h4>
+
+<p>枚举，截断的方式；完整的定义如下：</p>
+
+<pre><code>// Rounding policies :
+// Original
+//    value 1.2  1.21  1.25  1.35  1.27
+// Plain    1.2  1.2   1.3   1.4   1.3
+// Down     1.2  1.2   1.2   1.3   1.2
+// Up       1.2  1.3   1.3   1.4   1.3
+// Bankers  1.2  1.2   1.2   1.4   1.3
+
+typedef NS_ENUM(NSUInteger, NSRoundingMode) {
+    NSRoundPlain,   // Round up on a tie
+    NSRoundDown,    // Always down == truncate
+    NSRoundUp,      // Always up
+    NSRoundBankers  // on a tie round so last digit is even
+};
+</code></pre>
+
+<p><strong>scale</strong></p>
+
+<p>小数点后面的位数（精度）</p>
+
+<p><strong>raiseOnExactness</strong></p>
+
+<blockquote>
+<p>The exception raised if there is an exactness error.</p>
+</blockquote>
+
+<p><strong>raiseOnOverflow</strong></p>
+
+<p>是否抛出溢出错误，如果为YES，则APP会捕获溢出错误，这会导致APPcrash；</p>
+
+<blockquote>
+<p>The exception raised on overflow.</p>
+</blockquote>
+
+<p><strong>raiseOnUnderflow</strong></p>
+
+<blockquote>
+<p>The exception raised on underflow.</p>
+</blockquote>
+
+<p><strong>raiseOnDivideByZero</strong></p>
+
+<blockquote>
+<p>The exception raised on divide by zero.</p>
+</blockquote>
+
+<h4 id="补充知识">补充知识：</h4>
+
+<ul>
+<li>判断一个数值是否为NaN可以使用系统方法：isnan(x)；注：x为数值类型，不是NSDecimalNumber，更不是NSNumber;</li>
+<li>如果要判断一个NSDecimalNumber 是否为 NAN ，则使用下面的方法：</li>
+</ul>
+
+<pre><code>if([number isEqualToNumber:NSDecimalNumber.notANumber]){
+    NSLog(@&quot;number is nan&quot;);
+}else{
+    NSLog(@&quot;number:%@&quot;,number);
+}
+</code></pre>
+
+<p>参考链接：<a href="https://www.jianshu.com/p/c8feb12ecba5">iOS 两个数相乘导致 NSDecimalNumber overflow exception 错误的分析及解决</a></p>
+
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p></p>
+  </div>
+</section>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/go.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/dockerfile.min.js"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
